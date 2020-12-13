@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include "filterTask.h"
 #include "readerFile.h"
 
@@ -11,6 +12,19 @@
 #define DATETIME_FORMAT "%F %R"	  // "yyyy-MM-dd HH:mm"
 #define TODO_FILE "/home/jlopez/Dropbox/ExBrain/todo.txt"
 #define DONE_FILE "/home/jlopez/Dropbox/ExBrain/done.txt"
+
+// Color codes
+#define BLACK "\033[0m"
+#define GRAY "\033[1;30m"
+#define RED "\033[1;31m"
+#define GREEN "\033[1;32m"
+#define RGREEN "\033[32m"
+#define YELOW "\033[1;33m"
+#define RYELOW "\033[33m"
+#define BLUE "\033[1;34m"
+#define VIOLET "\033[1;35m"
+#define CYAN "\033[1;36m"
+#define LGRAY "\033[1;37m"
 
 namespace jlu {
 	enum TaskType { todo, done, all };
@@ -23,26 +37,80 @@ namespace jlu {
 		return ss.str ();
 	}
 
-	inline void printLine (const int& count, const std::string& line) {
-		std::cout << "    " << count << ".-  " << line << std::endl;
+	void printLine (const int& count, const std::string& line) {
+		const std::regex pattern (R"(^\d\d\d\d-\d\d-\d\d \d\d:\d\d)");
+		if (std::regex_search (line, pattern)) {
+			std::string dateTime = line.substr (0, 16);
+			std::string taskDescription = line.substr (16);
+			std::cout << "    " << count << ".-  " << RYELOW << dateTime << BLACK << taskDescription
+					  << std::endl;
+		} else {
+			std::cout << "    " << count << ".-  " << line << std::endl;
+		}
+	}
+
+	void printLine (const int& count, const std::string& line, std::string color) {
+		std::regex patternWithDate (R"(^\d\d\d\d-\d\d-\d\d \d\d:\d\d)");
+		std::regex patDoneWithDates (
+			R"(^x \d\d\d\d-\d\d-\d\d \d\d:\d\d \d\d\d\d-\d\d-\d\d \d\d:\d\d)");
+		if (std::regex_search (line, patternWithDate)) {
+			std::string dateTime = line.substr (0, 16);
+			std::string taskDescription = line.substr (16);
+			std::cout << "    " << count << ".-  " << RYELOW << dateTime << color << taskDescription
+					  << BLACK << std::endl;
+		} else if (std::regex_search (line, patDoneWithDates)) {
+			std::string xStr = line.substr (0, 2);	 // include a space
+			std::string endDateTime = line.substr (2, 16);
+			std::string startDateTime = line.substr (18, 17);	// include a space
+			std::string taskDesc = line.substr (35);
+			std::cout << "    " << count << ".-  ";
+			std::cout << GREEN << xStr << BLACK;
+			std::cout << RGREEN << endDateTime << RYELOW << startDateTime;
+			std::cout << color << taskDesc << BLACK << std::endl;
+		} else {
+			std::cout << "    " << count << ".-  " << color << line << BLACK << std::endl;
+		}
 	}
 
 	void printTask (TaskType type, std::vector<std::string> contentFile) {
-		int count = 0;
-		for (std::string& line : contentFile) {
-			if (type == TaskType::todo) {
-				if (isTodo (line)) {
-					printLine (count, line);
+		int count = 0, todos = 0, dones = 0;
+		std::cout << "     ID     DESCRIPTION\n";
+		std::cout << "    ----------------------------------------------" << std::endl;
+
+		if (contentFile.empty ()) {
+			std::cout << "    The task list is empty" << std::endl;
+		} else {
+			for (std::string& line : contentFile) {
+				if (type == TaskType::todo) {
+					if (isTodo (line)) {
+						printLine (count, line);
+						todos++;
+					} else {
+						dones++;
+					}
+				} else if (type == TaskType::done) {
+					if (isDone (line)) {
+						printLine (count, line, GRAY);
+						dones++;
+					} else {
+						todos++;
+					}
+				} else if (type == TaskType::all) {
+					if (isTodo (line)) {
+						printLine (count, line);
+						todos++;
+					} else {
+						printLine (count, line, GRAY);
+						dones++;
+					}
 				}
-			} else if (type == TaskType::done) {
-				if (isDone (line)) {
-					printLine (count, line);
-				}
-			} else if (type == TaskType::all) {
-				printLine (count, line);
+				count++;
 			}
-			count++;
 		}
+		std::cout << "\n    -----------\n    TO-DO: " << VIOLET << todos << BLACK
+				  << " DONE: " << GREEN << dones << BLACK << " TOTAL: " << BLUE << (todos + dones)
+				  << BLACK << " - " << CYAN << ((dones * 100) / (todos + dones)) << "% " << BLACK
+				  << "DONE!" << std::endl;
 	}
 
 	void showHelp () {
@@ -121,6 +189,39 @@ namespace jlu {
 			std::cout << "-----\nArchived done tasks in done.txt" << std::endl;
 		}
 	}
+
+	void changeTask (std::vector<std::string>& contentFile, const int idTask) {
+		//@todo: remove creation date from string
+		std::cout << "Old [ID:" << idTask << "] = \"" << contentFile[idTask] << "\"" << std::endl;
+		std::cout << "New: ";
+		std::string newTask;
+		std::getline (std::cin, newTask);
+		contentFile[idTask] = actualDateTimeToStr () + " " + newTask;
+
+		if (saveDataInFile (contentFile, TODO_FILE)) {
+			std::cout << "-----\nTask changed successfully" << std::endl;
+		}
+	}
+
+	void searchTask (std::vector<std::string>& contentFile, const std::string& pattern) {
+		std::vector<std::string> auxiliar;
+		std::regex reg (pattern);
+		int count = 0;
+
+		std::cout << "     ID     DESCRIPTION\n";
+		std::cout << "    ----------------------------------------------" << std::endl;
+
+		for (std::string line : contentFile) {
+			if (std::regex_search (line, reg)) {
+				if (isDone (line)) {
+					printLine (count, line, GRAY);
+				} else {
+					printLine (count, line);
+				}
+			}
+			count++;
+		}
+	}
 }	// namespace jlu
 
 int main (int argc, char* argv[]) {
@@ -136,9 +237,11 @@ int main (int argc, char* argv[]) {
 					jlu::printTask (jlu::TaskType::todo, contentFile);
 				} else if (3 == argc) {
 					//@todo: list only task that cointains the next word
+					jlu::searchTask (contentFile, argv[i + 1]);
+					break;
 				}
 			} else if (("-la" == tmp) || ("--list-all" == tmp)) {
-				printTask (jlu::TaskType::all, contentFile);
+				jlu::printTask (jlu::TaskType::all, contentFile);
 			} else if (("-ld" == tmp) || ("--list-done" == tmp)) {
 				jlu::printTask (jlu::TaskType::done, contentFile);
 			} else if (("-a" == tmp) || ("--add" == tmp)) {
@@ -192,6 +295,20 @@ int main (int argc, char* argv[]) {
 						  << " Compiled: " << __DATE__ << " " << __TIME__ << std::endl;
 			} else if (("-ar" == tmp) || ("--archive" == tmp)) {
 				jlu::archiveDoneTasks (contentFile);
+			} else if (("-c" == tmp) || ("--change" == tmp)) {
+				int idTask = 0;
+				std::istringstream iss (argv[i + 1]);
+				if (iss >> idTask) {
+					jlu::changeTask (contentFile, idTask);
+				} else {
+					//@todo log error
+				}
+				break;
+			} else if (("-s" == tmp) || ("--search" == tmp)) {
+				if (3 == argc) {
+					jlu::searchTask (contentFile, argv[i + 1]);
+					break;
+				}
 			} else {
 				std::cerr << "Argument not valid [" << tmp << "]" << std::endl;
 			}
