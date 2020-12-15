@@ -3,6 +3,8 @@
 #include "filterTask.h"
 
 TEST (FilterTodoTasks, checkTodo) {
+	jlu::FilterTask filter;
+
 	std::string taskList1[] = {
 		"2020-12-11 Tarea de ejemplo 1 @casa +todoApp",
 		"xTarea ejemplo 2 +familia",
@@ -11,7 +13,7 @@ TEST (FilterTodoTasks, checkTodo) {
 		"2020-12-11 10:20 Tarea5",
 	};
 	for (std::string task : taskList1) {
-		ASSERT_TRUE (jlu::isTodo (task));
+		ASSERT_TRUE (filter.isTodo (task));
 	}
 
 	std::string taskList2[] = {
@@ -23,11 +25,13 @@ TEST (FilterTodoTasks, checkTodo) {
 		"",
 	};
 	for (std::string task : taskList2) {
-		ASSERT_FALSE (jlu::isTodo (task));
+		ASSERT_FALSE (filter.isTodo (task));
 	}
 }
 
 TEST (FilterTodoTasks, checkDoneTask) {
+	jlu::FilterTask filter;
+
 	std::string taskList1[] = {
 		"2020-12-11 Tarea de ejemplo 1 @casa +todoApp",
 		"xTarea ejemplo 2 +familia",
@@ -37,7 +41,7 @@ TEST (FilterTodoTasks, checkDoneTask) {
 		"",
 	};
 	for (std::string task : taskList1) {
-		ASSERT_FALSE (jlu::isDone (task));
+		ASSERT_FALSE (filter.isDone (task));
 	}
 
 	std::string taskList2[] = {
@@ -48,6 +52,6 @@ TEST (FilterTodoTasks, checkDoneTask) {
 		"x 2020-12-12 2020-12-11 Recoger zapatero",
 	};
 	for (std::string task : taskList2) {
-		ASSERT_TRUE (jlu::isDone (task));
+		ASSERT_TRUE (filter.isDone (task));
 	}
 }

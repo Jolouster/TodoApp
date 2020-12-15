@@ -8,23 +8,20 @@ add_executable(appTest ${TEST_SOURCES})
 target_include_directories (
 	appTest
 	PUBLIC
-	${PROJECT_SOURCE_DIR}/src/readerFile
-	${PROJECT_SOURCE_DIR}/src/filterTask
+	${PROJECT_SOURCE_DIR}/src/manageTask
 )
 
 target_link_libraries (
 	app
 	PUBLIC
-	ReaderFile
-	FilterTask
+	ManageTask
 )
 
 target_link_libraries (
 	appTest
 	PUBLIC
 	gtest_main
-	ReaderFile
-	FilterTask
+	ManageTask
 )
 
 add_test(

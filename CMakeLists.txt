@@ -44,13 +44,12 @@ if (INCLUDE_GOOGLE_TEST)
 endif()
 # - end Google Test
 
-add_subdirectory(src/readerFile)
-add_subdirectory(src/filterTask)
+add_subdirectory(src/manageTask)
 
 add_executable (app main.cpp)
 # add_executable (appTest test/main.cpp)
 
-target_link_libraries(app PUBLIC ReaderFile FilterTask)
+target_link_libraries(app PUBLIC ManageTask)
 
 # - At the en of CMakeLists.txt I add test files
 if (INCLUDE_GOOGLE_TEST)
