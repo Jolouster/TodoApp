@@ -11,11 +11,11 @@ target_include_directories (
 	${PROJECT_SOURCE_DIR}/src/manageTask
 )
 
-target_link_libraries (
-	app
-	PUBLIC
-	ManageTask
-)
+# target_link_libraries (
+# 	app
+# 	PUBLIC
+# 	ManageTask
+# )
 
 target_link_libraries (
 	appTest

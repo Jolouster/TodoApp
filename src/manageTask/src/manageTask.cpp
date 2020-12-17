@@ -18,12 +18,19 @@ namespace jlu {
 
 	// Edition
 	bool ManageTask::addNewTask (const std::string& newTask) {
-		contentFile.push_back (newTask);
+		contentFile.push_back (actualDateTimeToStr () + " " + newTask);
 		return saveDataInFile (contentFile, TODO_FILE);
 	}
 
 	bool ManageTask::removeTask (const int idTask) {
 		contentFile.erase (contentFile.begin () + idTask);
+		return saveDataInFile (contentFile, TODO_FILE);
+	}
+
+	bool ManageTask::removeTask (const std::vector<int> idList) {
+		for (int index : idList) {
+			contentFile.erase (contentFile.begin () + index);
+		}
 		return saveDataInFile (contentFile, TODO_FILE);
 	}
 
@@ -63,4 +70,4 @@ namespace jlu {
 	}
 	// --- ends edition
 
-}   // namespace jlu
+}	// namespace jlu

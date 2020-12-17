@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "taskCLI.h"
 
 #define APPLICATION_NAME "TodoApp"
@@ -45,22 +46,38 @@ int main (int argc, char* argv[]) {
 				}
 			} else if (("-r" == tmp) || ("--remove" == tmp)) {
 				// remove task. Next item must be a index of task
-				if (3 <= argc) {
+				int index = 0;
+				if (3 < argc) {
+					std::vector<int> idList;
+
 					for (int j = (i + 1); j < argc; j++) {
 						std::istringstream iss (argv[j]);
-						int index = 0;
 
 						if (iss >> index) {
-							if (task.removeTask (index)) {
-								std::cout << "-----\nTask " << index << " deleted successfully"
-										  << std::endl;
-							} else {
-								std::cout << "-----\nTask " << index << " can't be delete"
-										  << std::endl;
-							}
+							idList.push_back (index);
+						}
+						index = 0;
+					}
+
+					std::sort (idList.begin (), idList.end (), std::greater<int> ());
+					// remove a list of items
+					if (task.removeTask (idList)) {
+						std::cout << "-----\nThe " << idList.size ()
+								  << " tasks deleted successfully" << std::endl;
+					} else {
+						std::cout << "-----\nThe " << idList.size () << " tasks can't be delete"
+								  << std::endl;
+					}
+					break;
+				} else if (3 == argc) {
+					std::istringstream iss (argv[i + 1]);
+					if (iss >> index) {
+						// remove only one item
+						if (task.removeTask (index)) {
+							std::cout << "-----\nTask " << index << " deleted successfully"
+									  << std::endl;
 						} else {
-							//@todo log error
-							break;
+							std::cout << "-----\nTask " << index << " can't be delete" << std::endl;
 						}
 					}
 					break;
@@ -73,9 +90,8 @@ int main (int argc, char* argv[]) {
 
 						if (iss >> index) {
 							if (task.doneTask (index)) {
-								// @todo: mostrar una unica tarea por indice
-								// std::cout << "-----\nTask " << index << " marked as done\n\t" <<
-								// contentFile[index] << std::endl;
+								std::cout << "-----\nTask " << index << " marked as done\n\t"
+										  << contentFile[index] << std::endl;
 							} else {
 								std::cout << "-----\nTask " << index << " can't be marked as done\n"
 										  << std::endl;
