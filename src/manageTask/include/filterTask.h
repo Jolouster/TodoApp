@@ -17,10 +17,14 @@ namespace jlu {
 		std::vector<std::string> getTagList (const std::vector<std::string>& contentFile);
 		std::vector<std::string> getProjectsList (const std::vector<std::string>& contentFile);
 		std::vector<std::string> getContextList (const std::vector<std::string>& contentFile);
+		std::vector<std::string> getClassificationTagsList (
+			const std::vector<std::string>& contentFile, const std::string& type);
 		std::map<int, std::string> taskByClassification (
 			const std::vector<std::string>& contentFile,
-			std::string classification,
+			const std::string& classification,
 			TaskClassification classType);
+
+	   private:
 	};
-}   // namespace jlu
+}	// namespace jlu
 #endif

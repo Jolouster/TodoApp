@@ -110,6 +110,33 @@ int main (int argc, char* argv[]) {
 					task.printSearchTask (argv[i + 1]);
 					break;
 				}
+			} else if ("--tag-list" == tmp) {
+				task.printClassificationItemsList ("tag");
+			} else if ("--project-list" == tmp) {
+				task.printClassificationItemsList ("project");
+			} else if ("--context-list" == tmp) {
+				task.printClassificationItemsList ("context");
+			} else if ("--by-tag" == tmp) {
+				if (3 == argc) {
+					task.printTaskByClassification (argv[i + 1], "tag");
+					break;
+				} else {
+					std::cerr << "You must spicify a tag to search" << std::endl;
+				}
+			} else if ("--by-project" == tmp) {
+				if (3 == argc) {
+					task.printTaskByClassification (argv[i + 1], "project");
+					break;
+				} else {
+					std::cerr << "You must spicify a project to search" << std::endl;
+				}
+			} else if ("--by-context" == tmp) {
+				if (3 == argc) {
+					task.printTaskByClassification (argv[i + 1], "context");
+					break;
+				} else {
+					std::cerr << "You must spicify a context to search" << std::endl;
+				}
 			} else {
 				std::cerr << "Argument not valid [" << tmp << "]" << std::endl;
 			}

@@ -25,12 +25,14 @@ namespace jlu {
 		void printTask (TaskType type);
 		void printChangeTask (const int idTask);
 		void printSearchTask (const std::string& patternStr);
+		void printClassificationItemsList (const std::string& type);
+		void printTaskByClassification (const std::string& item, const std::string& type);
 
 	   private:
 		void printLine (const int& count, const std::string& line);
 		void printLine (const int& count, const std::string& line, std::string color);
 		ManageTask task;
 	};
-}   // namespace jlu
+}	// namespace jlu
 
-#endif   // TASKCLI_H
+#endif	 // TASKCLI_H
