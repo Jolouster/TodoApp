@@ -1,4 +1,5 @@
 #include "taskCLI.h"
+#include <regex>
 
 namespace jlu {
 
@@ -8,10 +9,13 @@ namespace jlu {
 		if (std::regex_search (line, pattern)) {
 			std::string dateTime = line.substr (0, 16);
 			std::string taskDescription = line.substr (16);
+			highlightTags (taskDescription);
 			std::cout << "    " << count << ".-  " << RYELOW << dateTime << BLACK << taskDescription
 					  << std::endl;
 		} else {
-			std::cout << "    " << count << ".-  " << line << std::endl;
+			std::string tmpLine (line);
+			highlightTags (tmpLine);
+			std::cout << "    " << count << ".-  " << tmpLine << std::endl;
 		}
 	}
 
@@ -23,6 +27,7 @@ namespace jlu {
 		if (std::regex_search (line, patternWithDate)) {
 			std::string dateTime = line.substr (0, 16);
 			std::string taskDescription = line.substr (16);
+			highlightTags (taskDescription);
 			std::cout << "    " << count << ".-  " << RYELOW << dateTime << color << taskDescription
 					  << BLACK << std::endl;
 		} else if (std::regex_search (line, patDoneWithDates)) {
@@ -30,12 +35,60 @@ namespace jlu {
 			std::string endDateTime = line.substr (2, 16);
 			std::string startDateTime = line.substr (18, 17);	// include a space
 			std::string taskDesc = line.substr (35);
+			highlightTags (taskDesc);
 			std::cout << "    " << count << ".-  ";
 			std::cout << GREEN << xStr << BLACK;
 			std::cout << RGREEN << endDateTime << RYELOW << startDateTime;
 			std::cout << color << taskDesc << BLACK << std::endl;
 		} else {
-			std::cout << "    " << count << ".-  " << color << line << BLACK << std::endl;
+			std::string tmpLine (line);
+			highlightTags (tmpLine);
+			std::cout << "    " << count << ".-  " << color << tmpLine << BLACK << std::endl;
+		}
+	}
+
+	void TaskCliViewer::highlightTags (std::string& taskDescription) {
+		styleTag (taskDescription);
+		styleContext (taskDescription);
+		styleProject (taskDescription);
+	}
+
+	void TaskCliViewer::styleTag (std::string& taskDescription) {
+		std::regex pattern (R"(\s\#[a-zA-Z0-9\-\_ñáéíóúäëïöüÁÉÍÓÚ]+)");
+		std::smatch match;
+
+		if (std::regex_search (taskDescription, match, pattern)) {
+			for (std::string tag : match) {
+				std::size_t startPos = taskDescription.find (tag.substr (1));
+				taskDescription.replace (startPos, tag.substr (1).length (),
+										 BLUE + tag.substr (1) + BLACK);
+			}
+		}
+	}
+
+	void TaskCliViewer::styleContext (std::string& taskDescription) {
+		std::regex pattern (R"(\s\@[a-zA-Z0-9\-\_ñáéíóúäëïöüÁÉÍÓÚ]+)");
+		std::smatch match;
+
+		if (std::regex_search (taskDescription, match, pattern)) {
+			for (std::string tag : match) {
+				std::size_t startPos = taskDescription.find (tag.substr (1));
+				taskDescription.replace (startPos, tag.substr (1).length (),
+										 RED + tag.substr (1) + BLACK);
+			}
+		}
+	}
+
+	void TaskCliViewer::styleProject (std::string& taskDescription) {
+		std::regex pattern (R"(\s\+[a-zA-Z0-9\-\_ñáéíóúäëïöüÁÉÍÓÚ]+)");
+		std::smatch match;
+
+		if (std::regex_search (taskDescription, match, pattern)) {
+			for (std::string tag : match) {
+				std::size_t startPos = taskDescription.find (tag.substr (1));
+				taskDescription.replace (startPos, tag.substr (1).length (),
+										 VIOLET + tag.substr (1) + BLACK);
+			}
 		}
 	}
 
@@ -44,26 +97,26 @@ namespace jlu {
 		std::cout << "     ID     DESCRIPTION\n";
 		std::cout << "    ----------------------------------------------" << std::endl;
 
-		if (task.contentFile.empty ()) {
+		if (contentFile.empty ()) {
 			std::cout << "    The task list is empty" << std::endl;
 		} else {
-			for (std::string& line : task.contentFile) {
+			for (std::string& line : contentFile) {
 				if (type == TaskType::todo) {
-					if (task.isTodo (line)) {
+					if (isTodo (line)) {
 						printLine (count, line);
 						todos++;
 					} else {
 						dones++;
 					}
 				} else if (type == TaskType::done) {
-					if (task.isDone (line)) {
+					if (isDone (line)) {
 						printLine (count, line, GRAY);
 						dones++;
 					} else {
 						todos++;
 					}
 				} else if (type == TaskType::all) {
-					if (task.isTodo (line)) {
+					if (isTodo (line)) {
 						printLine (count, line);
 						todos++;
 					} else {
@@ -88,19 +141,18 @@ namespace jlu {
 	}
 
 	void TaskCliViewer::printChangeTask (const int idTask) {
-		std::cout << "Old [ID:" << idTask << "] = \"" << task.contentFile[idTask] << "\""
-				  << std::endl;
+		std::cout << "Old [ID:" << idTask << "] = \"" << contentFile[idTask] << "\"" << std::endl;
 		std::cout << "New: ";
 		std::string newTask;
 		std::getline (std::cin, newTask);
 
-		if (task.changeTask (newTask, idTask)) {
+		if (changeTask (newTask, idTask)) {
 			std::cout << "-----\nTask changed successfully" << std::endl;
 		}
 	}
 
 	void TaskCliViewer::printSearchTask (const std::string& patternStr) {
-		std::map<int, std::string> auxiliar = task.searchStr (task.contentFile, patternStr);
+		std::map<int, std::string> auxiliar = searchStr (contentFile, patternStr);
 
 		std::cout << "     ID     DESCRIPTION\n";
 		std::cout << "    ----------------------------------------------" << std::endl;
@@ -119,13 +171,13 @@ namespace jlu {
 		std::string header;
 
 		if ("tag" == type) {
-			itemsList = task.getClassificationTagsList (task.contentFile, "tag");
+			itemsList = getClassificationTagsList (contentFile, "tag");
 			header = "TAGS";
 		} else if ("project" == type) {
-			itemsList = task.getClassificationTagsList (task.contentFile, "project");
+			itemsList = getClassificationTagsList (contentFile, "project");
 			header = "PROJECTS";
 		} else if ("context" == type) {
-			itemsList = task.getClassificationTagsList (task.contentFile, "context");
+			itemsList = getClassificationTagsList (contentFile, "context");
 			header = "CONTEXTS";
 		}
 		std::cout << "    " << header << std::endl;
@@ -146,16 +198,16 @@ namespace jlu {
 		std::string header;
 
 		if ("tag" == type) {
-			itemsList = task.taskByClassification (task.contentFile, item,
-												   ManageTask::TaskClassification::tag);
+			itemsList =
+				taskByClassification (contentFile, item, ManageTask::TaskClassification::tag);
 			header = "TAG";
 		} else if ("project" == type) {
-			itemsList = task.taskByClassification (task.contentFile, item,
-												   ManageTask::TaskClassification::project);
+			itemsList =
+				taskByClassification (contentFile, item, ManageTask::TaskClassification::project);
 			header = "PROJECT";
 		} else if ("context" == type) {
-			itemsList = task.taskByClassification (task.contentFile, item,
-												   ManageTask::TaskClassification::context);
+			itemsList =
+				taskByClassification (contentFile, item, ManageTask::TaskClassification::context);
 			header = "CONTEXT";
 		}
 		std::cout << "    TASK BY " << header << ": " << item << std::endl;

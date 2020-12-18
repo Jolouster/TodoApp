@@ -91,7 +91,7 @@ int main (int argc, char* argv[]) {
 						if (iss >> index) {
 							if (task.doneTask (index)) {
 								std::cout << "-----\nTask " << index << " marked as done\n\t"
-										  << contentFile[index] << std::endl;
+										  << std::endl;
 							} else {
 								std::cout << "-----\nTask " << index << " can't be marked as done\n"
 										  << std::endl;

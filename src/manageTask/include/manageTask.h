@@ -6,6 +6,7 @@
 #include <iomanip>
 #include "filterTask.h"
 #include "manageTaskFile.h"
+#include "taskConfig.h"
 
 #define DATETIME_FORMAT "%F %R"	  // "yyyy-MM-dd HH:mm"
 #define TODO_FILE "/home/jlopez/Dropbox/ExBrain/todo.txt"
@@ -28,6 +29,8 @@ namespace jlu {
 
 	   private:
 		std::string actualDateTimeToStr ();
+
+		// Variables
 		std::string todoFileName;
 		std::string doneFileName;
 	};

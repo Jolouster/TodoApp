@@ -2,8 +2,9 @@
 
 namespace jlu {
 	ManageTask::ManageTask () {
-		setTodoFileName (TODO_FILE);
-		setDoneFileName (DONE_FILE);
+		TaskConfig config;
+		setTodoFileName (config.getTodoFileName ());
+		setDoneFileName (config.getDoneFileName ());
 		contentFile = getContent (todoFileName);
 	}
 	void ManageTask::setTodoFileName (const std::string& name) {
@@ -19,25 +20,25 @@ namespace jlu {
 	// Edition
 	bool ManageTask::addNewTask (const std::string& newTask) {
 		contentFile.push_back (actualDateTimeToStr () + " " + newTask);
-		return saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (contentFile, todoFileName);
 	}
 
 	bool ManageTask::removeTask (const int idTask) {
 		contentFile.erase (contentFile.begin () + idTask);
-		return saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (contentFile, todoFileName);
 	}
 
 	bool ManageTask::removeTask (const std::vector<int> idList) {
 		for (int index : idList) {
 			contentFile.erase (contentFile.begin () + index);
 		}
-		return saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (contentFile, todoFileName);
 	}
 
 	bool ManageTask::doneTask (const int idTask) {
 		std::string done = "x " + actualDateTimeToStr () + " " + contentFile[idTask];
 		contentFile[idTask] = done;
-		return saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (contentFile, todoFileName);
 	}
 
 	bool ManageTask::archiveDoneTasks () {
@@ -53,12 +54,13 @@ namespace jlu {
 			}
 		}
 
-		return saveDataInFile (auxiliar, DONE_FILE) && saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (auxiliar, doneFileName) &&
+			   saveDataInFile (contentFile, todoFileName);
 	}
 
 	bool ManageTask::changeTask (const std::string& newTask, const int idTask) {
 		contentFile[idTask] = actualDateTimeToStr () + " " + newTask;
-		return saveDataInFile (contentFile, TODO_FILE);
+		return saveDataInFile (contentFile, todoFileName);
 	}
 
 	std::string ManageTask::actualDateTimeToStr () {

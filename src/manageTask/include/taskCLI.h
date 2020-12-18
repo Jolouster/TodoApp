@@ -31,7 +31,10 @@ namespace jlu {
 	   private:
 		void printLine (const int& count, const std::string& line);
 		void printLine (const int& count, const std::string& line, std::string color);
-		ManageTask task;
+		void highlightTags (std::string& taskDescription);
+		void styleTag (std::string& taskDescription);
+		void styleContext (std::string& taskDescription);
+		void styleProject (std::string& taskDescription);
 	};
 }	// namespace jlu
 
