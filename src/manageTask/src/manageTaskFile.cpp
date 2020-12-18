@@ -17,14 +17,15 @@ namespace jlu {
 				}
 				file.close ();
 			} else {
-				std::cerr << "Fail to open file" << std::endl;
+				std::cerr << "Fail to open file: " << fileName << std::endl;
 			}
 		}
 
 		return output;
 	}
 
-	bool ManageTaskFile::saveDataInFile (const std::vector<std::string>& contentFile, std::string fileName) {
+	bool ManageTaskFile::saveDataInFile (const std::vector<std::string>& contentFile,
+										 std::string fileName) {
 		bool output = false;
 		std::ofstream file;
 
@@ -47,4 +48,4 @@ namespace jlu {
 
 		return output;
 	}
-}   // namespace jlu
+}	// namespace jlu

@@ -21,6 +21,11 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${DEST_LIB_FOLDER})
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${DEST_LIB_FOLDER})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${DEST_APP_FOLDER})
 
+if("Release" STREQUAL ${CMAKE_BUILD_TYPE})
+	include(GNUInstallDirs)
+	set(CMAKE_INSTALL_PREFIX "/op/${PROJECT_NAME}")
+endif()
+
 # Add third party source code
 # ----------------------------------------------
 include(FetchContent)

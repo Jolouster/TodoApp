@@ -127,10 +127,18 @@ namespace jlu {
 				count++;
 			}
 		}
-		std::cout << "\n    -----------\n    TO-DO: " << VIOLET << todos << BLACK
-				  << " DONE: " << GREEN << dones << BLACK << " TOTAL: " << BLUE << (todos + dones)
-				  << BLACK << " - " << CYAN << ((dones * 100) / (todos + dones)) << "% " << BLACK
-				  << "DONE!" << std::endl;
+		if (todos > 0 || dones > 0) {
+			int percent = 0;
+			if (dones == 0) {
+				percent = 0;
+			} else {
+				percent = ((dones * 100) / (todos + dones));
+			}
+			std::cout << "\n    -----------\n    TO-DO: " << VIOLET << todos << BLACK
+					  << " DONE: " << GREEN << dones << BLACK << " TOTAL: " << BLUE
+					  << (todos + dones) << BLACK << " - " << CYAN << percent << "% " << BLACK
+					  << "DONE!" << std::endl;
+		}
 	}
 
 	void TaskCliViewer::showHelp () {
