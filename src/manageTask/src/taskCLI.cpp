@@ -144,7 +144,26 @@ namespace jlu {
 	void TaskCliViewer::showHelp () {
 		//@todo: write a good help text
 		std::string help;
-		help = "How to use this program";
+		help =
+			"\tdtask --comand <argument>\n"
+			"\t\t - a | --add\t\t\tNew task to todo.txt file\n"
+			"\t\t - ar | --archive\t\tMove all done task to done.txt file\n"
+			"\t\t - c | --change N\t\tChange the task with identifier N (integer)\n"
+			"\t\t - d | --done N M L...\t\tMark as done the task with identifier (integer)\n"
+			"\t\t - h | --help\t\t\tShow this help\n"
+			"\t\t - l | --list\t\t\tList all task to do with its identifier\n"
+			"\t\t - la | --list-all\t\tList all task, to do and done, with its identifier\n"
+			"\t\t - ld | --list-done\t\tList only done task in file todo.txt\n"
+			"\t\t - r | --remove N M L O...\tRemove one o more task\n"
+			"\t\t - s | --search Word\t\tSearch \"Word\" in task list and list only the tasks have "
+			"this word\n"
+			"\t\t -v | --version\t\t\ttShow the version\n"
+			"\t\t --tag-list\t\t\tList all differents tags existent in to do list\n"
+			"\t\t --project-list\t\t\tList all differents projects existent in to do list\n"
+			"\t\t --context-list\t\t\tList all differents context existent in to do list\n"
+			"\t\t --by-context contexName\tList all task to do with context 'contextName'\n"
+			"\t\t --by-tag tagName\t\tList all task to do with the tag 'tagName'\n"
+			"\t\t --by-project projectName\tList all task to do of project 'projectName'\n";
 		std::cout << help << std::endl;
 	}
 
