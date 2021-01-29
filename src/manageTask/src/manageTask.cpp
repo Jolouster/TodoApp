@@ -7,15 +7,10 @@ namespace jlu {
 		setDoneFileName (config.getDoneFileName ());
 		contentFile = getContent (todoFileName);
 	}
-	void ManageTask::setTodoFileName (const std::string& name) {
-		//@toddo: validate input
-		todoFileName = name;
-	}
 
-	void ManageTask::setDoneFileName (const std::string& name) {
-		//@todo: validate input
-		doneFileName = name;
-	}
+	void ManageTask::setTodoFileName (const std::string& name) { todoFileName = name; }
+
+	void ManageTask::setDoneFileName (const std::string& name) { doneFileName = name; }
 
 	// Edition
 	bool ManageTask::addNewTask (const std::string& newTask) {
