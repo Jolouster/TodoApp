@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 3.18)
 
 project (TodoApp VERSION 1.0.0 LANGUAGES CXX)
-add_compile_options(-Wall -Wextra -Wpedantic)
-option(INCLUDE_GOOGLE_TEST "Add Google Test framework to project" ON)
 
 set (CMAKE_BUILD_TYPE Debug)
 # set (CMAKE_BUILD_TYPE Release)
@@ -24,7 +22,12 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${DEST_APP_FOLDER})
 if("Release" STREQUAL ${CMAKE_BUILD_TYPE})
 	include(GNUInstallDirs)
 	set(CMAKE_INSTALL_PREFIX "/op/${PROJECT_NAME}")
+	option(INCLUDE_GOOGLE_TEST "Don't add Google Test framework to project" False)
+else ("Debug" STREQUAL ${CMAKE_BUILD_TYPE})
+	add_compile_options(-Wall -Wextra -Wpedantic)
+	option(INCLUDE_GOOGLE_TEST "Add Google Test framework to project" True)
 endif()
+
 
 # Add third party source code
 # ----------------------------------------------
